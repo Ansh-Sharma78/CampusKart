@@ -1,0 +1,37 @@
+# Node dependencies/build
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# Java/Maven build
+target/
+backend/target/
+
+# Environment/secrets
+.env
+.env.*
+frontend/.env
+frontend/.env.*
+
+# Spring secret/local configs
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-secret.properties
+backend/src/main/resources/application-secrets.properties
+backend/src/main/resources/application-private.properties
+backend/src/main/resources/application-prod.properties
+
+# Uploaded user files
+uploads/
+backend/uploads/
+
+# IDE/editor files
+.idea/
+*.iml
+.vscode/
+
+# OS/logs
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

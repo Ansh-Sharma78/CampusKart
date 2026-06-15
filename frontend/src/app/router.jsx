@@ -7,6 +7,8 @@ import { VerifyEmailPage } from '../pages/auth/VerifyEmailPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { ProductCatalogPage } from "../pages/ProductCatalogPage";
+import { ProductDetailPage } from "../pages/ProductDetailPages";
+import { SellerProductCreatePage } from "../pages/SellerProductCreatePage";
 
 export const router = createBrowserRouter([
   {
@@ -36,11 +38,19 @@ export const router = createBrowserRouter([
             path: 'dashboard',
             element: <DashboardPage />,
           },
+          {
+            path: 'seller/products/new',
+            element: <SellerProductCreatePage />,
+          },
         ],
       },
       {
        path: "products",
        element: <ProductCatalogPage />,
+      },
+      {
+      path: "products/:productId",
+      element: <ProductDetailPage />,
       },
     ],
   },

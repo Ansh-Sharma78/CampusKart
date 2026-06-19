@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProductById } from "../features/products/productApi";
+import { addCartItem } from "../features/cart/cartApi";
 
 function buildImageUrl(imageUrl) {
   if (!imageUrl) {
     return null;
   }
 
-  return `${import.meta.env.VITE_BACKEND_ORIGIN}${imageUrl}`;
+  // TODO: Use import.meta.env.VITE_BACKEND_ORIGIN from .env file
+  // For now, hardcode localhost:8080 for development
+  const origin = 'http://localhost:8080';
+  return `${origin}${imageUrl}`;
 }
 
 export function ProductDetailPage() {
@@ -18,8 +22,12 @@ export function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartMessage, setCartMessage] = useState("");
+  const [cartError, setCartError] = useState("");
+
   const imageUrls = useMemo(() => {
-    return product?.images?.map((image) => buildImageUrl(image.url)) || [];
+    return product?.images?.map((image) => buildImageUrl(image.imageUrl)) || [];
   }, [product]);
 
   useEffect(() => {
@@ -32,7 +40,7 @@ export function ProductDetailPage() {
         const loadedProduct = response.data.data;
 
         setProduct(loadedProduct);
-        setSelectedImageUrl(buildImageUrl(loadedProduct.images?.[0]?.url) || "");
+        setSelectedImageUrl(buildImageUrl(loadedProduct.images?.[0]?.imageUrl) || "");
       } catch (error) {
         setErrorMessage(
           error.response?.data?.message || "Unable to load product"
@@ -41,9 +49,28 @@ export function ProductDetailPage() {
         setIsLoading(false);
       }
     }
-
+    
     loadProduct();
   }, [productId]);
+  async function handleAddToCart() {
+  try {
+    setIsAddingToCart(true);
+    setCartMessage("");
+    setCartError("");
+
+    await addCartItem({
+      productId: Number(productId),
+      quantity: 1,
+    });
+
+    setCartMessage("Added to cart");
+  } catch (error) {
+    setCartError(error.response?.data?.message || "Unable to add to cart");
+  } finally {
+    setIsAddingToCart(false);
+  }
+}
+
 
   if (isLoading) {
     return (
@@ -131,6 +158,24 @@ export function ProductDetailPage() {
           <p className="text-2xl font-semibold text-slate-950">
             ₹{product.price}
           </p>
+          <div className="space-y-2">
+  <button
+    type="button"
+    onClick={handleAddToCart}
+    disabled={isAddingToCart || product.status !== "ACTIVE" || product.quantity <= 0}
+    className="w-full rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+  >
+    {isAddingToCart ? "Adding..." : "Add to cart"}
+  </button>
+
+  {cartMessage && (
+    <p className="text-sm font-medium text-emerald-700">{cartMessage}</p>
+  )}
+
+  {cartError && (
+    <p className="text-sm font-medium text-red-700">{cartError}</p>
+  )}
+</div>
 
           <div className="grid gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-700 sm:grid-cols-2">
             <div>

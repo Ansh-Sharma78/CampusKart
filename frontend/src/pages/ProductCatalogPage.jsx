@@ -15,11 +15,14 @@ const categories = [
 function getImageUrl(product) {
   const firstImage = product.images?.[0];
 
-  if (!firstImage?.url) {
+  if (!firstImage?.imageUrl) {
     return null;
   }
 
-  return `${import.meta.env.VITE_BACKEND_ORIGIN}${firstImage.url}`;
+  // TODO: Use import.meta.env.VITE_BACKEND_ORIGIN from .env file
+  // For now, hardcode localhost:8080 for development
+  const origin = 'http://localhost:8080';
+  return `${origin}${firstImage.imageUrl}`;
 }
 
 export function ProductCatalogPage() {

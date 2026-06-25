@@ -56,7 +56,8 @@ export function SellerProductCreatePage() {
       const response = await createProduct(payload);
       const createdProduct = response.data.data;
 
-      navigate(`/products/${createdProduct.id}`);
+      navigate(`/seller/products/${createdProduct.id}/images`);
+
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "Unable to create product"

@@ -25,7 +25,12 @@ export function AppLayout() {
             <Link className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100" to="/">
               Home
             </Link>
-
+            <Link to="/cart" className="text-sm font-medium text-slate-700 hover:text-emerald-700">
+              Cart
+            </Link>
+            <Link to="/addresses" className="text-sm font-medium text-slate-700 hover:text-emerald-700">
+              Addresses
+            </Link>
             {user ? (
               <>
                 <Link className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100" to="/dashboard">

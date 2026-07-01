@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { PackageSearch, Search, SlidersHorizontal } from "lucide-react";
 import { getProducts } from "../features/products/productApi";
+import { ProductCard } from "../components/ProductCard";
+import { ProductCardSkeleton } from "../components/ProductCardSkeleton";
 
 const categories = [
   { label: "All", value: "" },
@@ -12,22 +14,10 @@ const categories = [
   { label: "Furniture", value: "FURNITURE" },
 ];
 
-function getImageUrl(product) {
-  const firstImage = product.images?.[0];
-
-  if (!firstImage?.imageUrl) {
-    return null;
-  }
-
-  // TODO: Use import.meta.env.VITE_BACKEND_ORIGIN from .env file
-  // For now, hardcode localhost:8080 for development
-  const origin = 'http://localhost:8080';
-  return `${origin}${firstImage.imageUrl}`;
-}
-
 export function ProductCatalogPage() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -52,99 +42,126 @@ export function ProductCatalogPage() {
     loadProducts();
   }, [selectedCategory]);
 
-  return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-emerald-700">CampusKart</p>
-          <h1 className="text-2xl font-semibold text-slate-950">
-            Browse campus listings
-          </h1>
-        </div>
+  const filteredProducts = products.filter((product) => {
+    const keyword = searchText.trim().toLowerCase();
 
-        <select
-          value={selectedCategory}
-          onChange={(event) => setSelectedCategory(event.target.value)}
-          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-600 sm:w-56"
-        >
-          {categories.map((category) => (
-            <option key={category.label} value={category.value}>
-              {category.label}
-            </option>
-          ))}
-        </select>
+    if (!keyword) {
+      return true;
+    }
+
+    return [
+      product.title,
+      product.description,
+      product.campus,
+      product.category,
+      product.condition,
+    ]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(keyword));
+  });
+
+  return (
+    <section className="space-y-6">
+      <div className="overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-xl sm:px-8">
+        <div className="max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-wide text-emerald-300">
+            Campus marketplace
+          </p>
+
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
+            Browse student listings near you
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+            Discover books, gadgets, notes, furniture, cycles, and hostel
+            essentials listed by students across your campus.
+          </p>
+        </div>
       </div>
 
-      {isLoading && (
-        <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-600">
-          Loading products...
-        </p>
-      )}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="relative">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              aria-hidden="true"
+            />
 
-      {!isLoading && errorMessage && (
-        <p className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {errorMessage}
-        </p>
-      )}
+            <input
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+              placeholder="Search products, campus, category..."
+              className="h-12 w-full rounded-full border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+            />
+          </div>
 
-      {!isLoading && !errorMessage && products.length === 0 && (
-        <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-600">
-          No products found.
-        </p>
-      )}
+          <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-600">
+            <SlidersHorizontal size={17} aria-hidden="true" />
+            {filteredProducts.length} listings
+          </div>
+        </div>
 
-      {!isLoading && !errorMessage && products.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
-            const imageUrl = getImageUrl(product);
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+          {categories.map((category) => {
+            const isActive = selectedCategory === category.value;
 
             return (
-              <Link
-                key={product.id}
-                to={`/products/${product.id}`}
-                className="overflow-hidden rounded-md border border-slate-200 bg-white transition hover:border-emerald-500 hover:shadow-sm"
+              <button
+                key={category.label}
+                type="button"
+                onClick={() => setSelectedCategory(category.value)}
+                className={[
+                  "shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition",
+                  isActive
+                    ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
+                ].join(" ")}
               >
-                <div className="aspect-[4/3] bg-slate-100">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={product.title}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                      No image
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-2 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <h2 className="line-clamp-2 text-base font-semibold text-slate-950">
-                      {product.title}
-                    </h2>
-
-                    <p className="shrink-0 text-sm font-semibold text-emerald-700">
-                      ₹{product.price}
-                    </p>
-                  </div>
-
-                  <p className="text-sm text-slate-600">{product.campus}</p>
-
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="rounded bg-slate-100 px-2 py-1 text-slate-700">
-                      {product.category}
-                    </span>
-                    <span className="rounded bg-slate-100 px-2 py-1 text-slate-700">
-                      {product.condition}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+                {category.label}
+              </button>
             );
           })}
         </div>
+      </div>
+
+      {isLoading && (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        </div>
       )}
-    </main>
+
+      {!isLoading && errorMessage && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-semibold text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      {!isLoading && !errorMessage && filteredProducts.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+            <PackageSearch size={26} aria-hidden="true" />
+          </div>
+
+          <h2 className="mt-4 text-lg font-bold text-slate-950">
+            No matching products
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            Try a different search term or category filter.
+          </p>
+        </div>
+      )}
+
+      {!isLoading && !errorMessage && filteredProducts.length > 0 && (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

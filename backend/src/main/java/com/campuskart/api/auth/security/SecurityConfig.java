@@ -60,8 +60,21 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/products/**").permitAll()
+                        .requestMatchers("/api/v1/cart/**").authenticated()
+                        .requestMatchers("/api/v1/addresses/**").authenticated()
+                        .requestMatchers("/api/v1/cart/**").authenticated()
+                        .requestMatchers("/api/v1/addresses/**").authenticated()
+                        .requestMatchers(
+                                "/api/v1/orders",
+                                "/api/v1/orders/**"
+                        ).authenticated()
+                        .requestMatchers(
+                                "/api/v1/payments",
+                                "/api/v1/payments/**"
+                        ).authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

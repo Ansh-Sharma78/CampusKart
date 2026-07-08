@@ -13,5 +13,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "items.product",
             "items.product.images"
     })
-    Optional<Cart> findByUser(User user);
+    Optional<Cart> findByUser(User user); //SELECT * FROM carts WHERE user_id = ?
 }

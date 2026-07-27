@@ -181,6 +181,40 @@ public class Product {
         this.status = ProductStatus.DELETED;
     }
 
+
+    public void reduceStock(int purchasedQuantity) {
+        if (purchasedQuantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Purchased quantity must be greater than zero"
+            );
+        }
+
+        if (purchasedQuantity > quantity) {
+            throw new IllegalStateException(
+                    "Purchased quantity exceeds available stock"
+            );
+        }
+
+        quantity -= purchasedQuantity;
+
+        if (quantity == 0) {
+            status = ProductStatus.SOLD_OUT;
+        }
+    }
+
+    public void restoreStock(int restoredQuantity) {
+        if (restoredQuantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Restored quantity must be greater than zero"
+            );
+        }
+
+        quantity += restoredQuantity;
+
+        if (status == ProductStatus.SOLD_OUT) {
+            status = ProductStatus.ACTIVE;
+        }
+    }
     public void addImage(ProductImage image) {
         images.add(image);
         image.assignToProduct(this);

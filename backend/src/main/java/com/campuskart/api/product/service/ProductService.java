@@ -64,7 +64,7 @@ public class ProductService {
     }
     @Transactional(readOnly = true)  //lists active products
     public List<ProductResponse> listActiveProducts(ProductCategory category) {
-        List<Product> products = category == null
+        List<Product> products = category == null  //If no category filter is provided, list all active products.
                 ? productRepository.findByStatusOrderByCreatedAtDesc(ProductStatus.ACTIVE)
                 : productRepository.findByCategoryAndStatusOrderByCreatedAtDesc(category, ProductStatus.ACTIVE);
 

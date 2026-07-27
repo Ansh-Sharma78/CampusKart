@@ -1,4 +1,7 @@
 package com.campuskart.api.payment.gateway;
 
-public class PaymentGatewayConfirmationRequest {
+public record PaymentGatewayConfirmationRequest(
+        String providerOrderId,
+        String providerPaymentId
+) {
 }

@@ -1,4 +1,7 @@
 package com.campuskart.api.payment.domain;
 
-public class PaymentStatus {
+public enum PaymentStatus {
+    INITIATED,
+    CONFIRMED,
+    FAILED
 }

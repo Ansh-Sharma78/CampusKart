@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
 
-    List<ProductImage> findByProductOrderBySortOrderAsc(Product product);
+    List<ProductImage> findByProductOrderBySortOrderAsc(Product product);  //Load product images in display order.
 }
 

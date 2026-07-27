@@ -1,4 +1,8 @@
 package com.campuskart.api.payment.gateway;
 
-public class PaymentGatewayConfirmationResponse {
+public record PaymentGatewayConfirmationResponse(
+        boolean successful,
+        String providerPaymentId,
+        String failureReason
+) {
 }
